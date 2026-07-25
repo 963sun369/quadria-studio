@@ -4,32 +4,27 @@ import shutil
 PROJECT = r'C:\Users\slaoui\Desktop\quadria-studio'
 
 def main():
-    print('Deploiement Quadria Studio v2')
+    print('Deploiement Quadria Studio v2.1')
     print('  Dossier : ' + PROJECT)
     print()
 
-    # Sauvegarde
     bak = os.path.join(PROJECT, '_backup_v1')
     if not os.path.exists(bak):
         shutil.copytree(PROJECT, bak, ignore=shutil.ignore_patterns('_backup_*', '_v2_*'))
         print('  Sauvegarde v1 : _backup_v1')
 
-    # theme.css
     with open(os.path.join(PROJECT, 'theme.css'), 'w', encoding='utf-8') as f:
         f.write(CSS)
     print('  theme.css')
 
-    # ui.js
     with open(os.path.join(PROJECT, 'ui.js'), 'w', encoding='utf-8') as f:
         f.write(JS)
     print('  ui.js')
 
-    # index.html
     with open(os.path.join(PROJECT, 'index.html'), 'w', encoding='utf-8') as f:
         f.write(HTML)
     print('  index.html')
 
-    # Injection dans pages existantes
     print()
     print('  Injection sur pages existantes...')
     pages = ['audit.html', 'boutique.html', 'conseil.html', 'growth.html',
@@ -54,12 +49,15 @@ def main():
 
     print()
     print('=' * 40)
-    print('  Deploiement v2 termine !')
+    print('  Deploiement v2.1 termine !')
     print('=' * 40)
+    print()
+    print('IMPORTANT : Remplacez 212XXXXXXXXX dans index.html')
+    print('par votre vrai numero WhatsApp (format international).')
     print()
     print('Prochaines etapes :')
     print('  1. git add .')
-    print('  2. git commit -m "v2: redesign complet"')
+    print('  2. git commit -m "v2.1: widget WhatsApp + contact"')
     print('  3. git push origin master')
     print()
 
@@ -261,6 +259,29 @@ body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
   .q-btn-primary, .q-btn-secondary { width: 100%; text-align: center; }
   .q-footer-grid { grid-template-columns: 1fr; }
   .q-footer-bottom { flex-direction: column; gap: 16px; }
+}
+
+/* WhatsApp Floating Button */
+.q-whatsapp {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1002;
+  width: 56px;
+  height: 56px;
+  background: #25D366;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+.q-whatsapp:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 30px rgba(37, 211, 102, 0.6);
 }
 
 '''
@@ -494,7 +515,7 @@ HTML = '''
     <h1>Votre metier de proximite,<br><span class="text-gradient">propulse par l&#39;IA</span></h1>
     <p>WhatsApp intelligent, reservation en ligne, site vitrine et dashboard &#8212; tout ce qu&#39;il faut pour attirer, convertir et fideliser vos clients, sans toucher une ligne de code.</p>
     <div class="q-hero-btns">
-      <a href="#demo" class="q-btn-primary">Voir la demo en 2 minutes</a>
+      <a href="#services" class="q-btn-primary">Voir la demo en 2 minutes</a>
       <a href="#metiers" class="q-btn-secondary">Choisir mon metier</a>
     </div>
     <div class="q-social-proof">
@@ -791,6 +812,19 @@ HTML = '''
   </div>
 </section>
 
+
+<section id="contact" class="q-section" style="border-top:1px solid var(--border);">
+  <div class="container text-center">
+    <span class="q-section-label">Pret a demarrer ?</span>
+    <h2>Discutons de <span class="text-gradient">votre projet</span></h2>
+    <p class="q-section-desc">14 jours d&#39;essai gratuit. Sans engagement. Sans carte bancaire.</p>
+    <div class="q-hero-btns" style="margin-bottom:0;">
+      <a href="mailto:contact@quadria.studio" class="q-btn-primary">Envoyer un email</a>
+      <a href="https://calendly.com/quadria-studio" target="_blank" class="q-btn-secondary">Prendre rendez-vous</a>
+    </div>
+  </div>
+</section>
+
 <footer class="q-footer">
   <div class="container">
     <div class="q-footer-grid">
@@ -849,6 +883,11 @@ HTML = '''
 </footer>
 
 <script src="ui.js"></script>
+
+<!-- WhatsApp Floating Button -->
+<a href="https://wa.me/212XXXXXXXXX" class="q-whatsapp" target="_blank" aria-label="Contactez-nous sur WhatsApp">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.134 1.585 5.937L0 24l6.335-1.652c1.746.953 3.71 1.459 5.71 1.46h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
 </body>
 </html>
 
