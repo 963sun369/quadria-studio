@@ -1,75 +1,69 @@
 import os
 import shutil
 
-PROJECT_PATH = r"C:\Users\slaoui\Desktop\quadria-studio"
+PROJECT = r'C:\Users\slaoui\Desktop\quadria-studio'
 
 def main():
-    print("Deploiement Quadria Studio v2")
-    print("   Dossier : " + PROJECT_PATH)
-    print()
-    
-    # Sauvegarde
-    backup_path = os.path.join(PROJECT_PATH, "_backup_v1")
-    if not os.path.exists(backup_path):
-        shutil.copytree(PROJECT_PATH, backup_path, ignore=shutil.ignore_patterns("_backup_*", "_v2_*"))
-        print("  Sauvegarde v1 : _backup_v1")
-    
-    # Fichier 1 : theme.css
-    css_path = os.path.join(PROJECT_PATH, "theme.css")
-    with open(css_path, "w", encoding="utf-8") as out:
-        out.write(CSS_CONTENT)
-    print("  theme.css")
-    
-    # Fichier 2 : ui.js
-    js_path = os.path.join(PROJECT_PATH, "ui.js")
-    with open(js_path, "w", encoding="utf-8") as out:
-        out.write(JS_CONTENT)
-    print("  ui.js")
-    
-    # Fichier 3 : index.html
-    html_path = os.path.join(PROJECT_PATH, "index.html")
-    with open(html_path, "w", encoding="utf-8") as out:
-        out.write(HTML_CONTENT)
-    print("  index.html")
-    
-    # Injection dans les pages existantes
-    print()
-    print("  Injection sur pages existantes...")
-    pages = ["audit.html", "boutique.html", "conseil.html", "growth.html", 
-             "journal.html", "statut.html", "studio.html", "systemes.html", "vault.html"]
-    css_line = '  <link rel="stylesheet" href="theme.css">'
-    js_line = '  <script src="ui.js" defer></script>'
-    head_marker = "</head>"
-    
-    for page in pages:
-        page_path = os.path.join(PROJECT_PATH, page)
-        if os.path.exists(page_path):
-            with open(page_path, "r", encoding="utf-8") as inp:
-                content = inp.read()
-            if "theme.css" not in content:
-                replacement = css_line + "\n" + js_line + "\n" + head_marker
-                content = content.replace(head_marker, replacement)
-                with open(page_path, "w", encoding="utf-8") as out:
-                    out.write(content)
-                print("    OK " + page)
-            else:
-                print("    OK " + page + " (deja a jour)")
-        else:
-            print("    Page non trouvee : " + page)
-    
-    print()
-    print("=" * 40)
-    print("  Deploiement v2 termine !")
-    print("=" * 40)
-    print()
-    print("Prochaines etapes :")
-    print(r"  1. cd C:\Users\slaoui\Desktop\quadria-studio")
-    print("  2. git add .")
-    print("  3. git commit -m "v2: redesign complet"")
-    print("  4. git push origin master")
+    print('Deploiement Quadria Studio v2')
+    print('  Dossier : ' + PROJECT)
     print()
 
-CSS_CONTENT = """
+    # Sauvegarde
+    bak = os.path.join(PROJECT, '_backup_v1')
+    if not os.path.exists(bak):
+        shutil.copytree(PROJECT, bak, ignore=shutil.ignore_patterns('_backup_*', '_v2_*'))
+        print('  Sauvegarde v1 : _backup_v1')
+
+    # theme.css
+    with open(os.path.join(PROJECT, 'theme.css'), 'w', encoding='utf-8') as f:
+        f.write(CSS)
+    print('  theme.css')
+
+    # ui.js
+    with open(os.path.join(PROJECT, 'ui.js'), 'w', encoding='utf-8') as f:
+        f.write(JS)
+    print('  ui.js')
+
+    # index.html
+    with open(os.path.join(PROJECT, 'index.html'), 'w', encoding='utf-8') as f:
+        f.write(HTML)
+    print('  index.html')
+
+    # Injection dans pages existantes
+    print()
+    print('  Injection sur pages existantes...')
+    pages = ['audit.html', 'boutique.html', 'conseil.html', 'growth.html',
+             'journal.html', 'statut.html', 'studio.html', 'systemes.html', 'vault.html']
+    css_line = '  <link rel="stylesheet" href="theme.css">'
+    js_line = '  <script src="ui.js" defer></script>'
+    marker = '</head>'
+    for page in pages:
+        path = os.path.join(PROJECT, page)
+        if os.path.exists(path):
+            with open(path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            if 'theme.css' not in content:
+                content = content.replace(marker, css_line + '\n' + js_line + '\n' + marker)
+                with open(path, 'w', encoding='utf-8') as f:
+                    f.write(content)
+                print('    OK ' + page)
+            else:
+                print('    OK ' + page + ' (deja a jour)')
+        else:
+            print('    Page non trouvee : ' + page)
+
+    print()
+    print('=' * 40)
+    print('  Deploiement v2 termine !')
+    print('=' * 40)
+    print()
+    print('Prochaines etapes :')
+    print('  1. git add .')
+    print('  2. git commit -m "v2: redesign complet"')
+    print('  3. git push origin master')
+    print()
+
+CSS = '''
 /* QUADRIA STUDIO v2 — Design System */
 :root {
   --bg: #0B0F19; --bg-surface: #111827; --bg-elevated: #1A2235;
@@ -268,9 +262,10 @@ body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
   .q-footer-grid { grid-template-columns: 1fr; }
   .q-footer-bottom { flex-direction: column; gap: 16px; }
 }
-"""
 
-JS_CONTENT = """
+'''
+
+JS = '''
 (function() {
   'use strict';
   function initNavbar() {
@@ -413,9 +408,10 @@ JS_CONTENT = """
     }
   });
 })();
-"""
 
-HTML_CONTENT = """
+'''
+
+HTML = '''
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -855,7 +851,8 @@ HTML_CONTENT = """
 <script src="ui.js"></script>
 </body>
 </html>
-"""
 
-if __name__ == "__main__":
+'''
+
+if __name__ == '__main__':
     main()
