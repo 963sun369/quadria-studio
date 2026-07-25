@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Systèmes & IA — QuadrIA Studio</title>
+<meta name="description" content="Agents de devis WhatsApp, réservation avec acompte, dashboards, automatisations. Le pôle Systèmes & IA de QuadrIA Studio.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0c; --bg-2: #0e0f12; --card: #101114;
+    --ink: #edeef2; --muted: #8d93a1;
+    --accent: #ff5e1f; --live: #35e0c2; --gold: #d9a13c;
+    --line: rgba(237,238,242,.08); --line-2: rgba(237,238,242,.14);
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+    --sans: "Bricolage Grotesque", system-ui, sans-serif;
+    --serif: "Instrument Serif", Georgia, serif;
+    --arabic: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { overflow-x: clip; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); line-height: 1.5; }
+  ::selection { background: var(--accent); color: #000; }
+  a { color: inherit; text-decoration: none; }
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: 999; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  }
+  nav {
+    display: flex; align-items: center; gap: 18px; padding: 0 28px; height: 62px;
+    border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,12,.85); backdrop-filter: blur(12px);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; letter-spacing: -.02em; }
+  .qmark { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; width: 14px; height: 14px; }
+  .qmark span { background: var(--ink); }
+  .qmark span:nth-child(4) { background: var(--accent); }
+  .brand em { font-style: normal; color: var(--accent); }
+  nav .spacer { flex: 1; }
+  .nav-link { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; color: var(--muted); }
+  .nav-link:hover { color: var(--accent); }
+  .btn-wa {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: #22c55e; color: #04140a; border-radius: 3px;
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em; font-weight: 500;
+    padding: 9px 14px; transition: filter .2s;
+  }
+  .btn-wa:hover { filter: brightness(1.12); }
+  @media (max-width: 640px) { .btn-wa { display: none; } }
+
+  .hero-p {
+    padding: 110px 4vw 70px; max-width: 1240px; margin: 0 auto; position: relative; overflow: hidden;
+  }
+  .hero-p .glow { position: absolute; width: 520px; height: 520px; border-radius: 50%; filter: blur(130px); background: rgba(255,94,31,.11); top: -160px; left: -120px; pointer-events: none; }
+  .kicker { font-family: var(--mono); font-size: 11px; letter-spacing: .2em; color: var(--live); margin-bottom: 22px; }
+  h1 { font-size: clamp(42px, 7.4vw, 96px); font-weight: 650; letter-spacing: -.05em; line-height: .95; max-width: 14ch; position: relative; }
+  h1 .serif, .sec-title .serif, .final h2 .serif { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--accent); }
+  .hero-p .sub { margin-top: 26px; color: var(--muted); max-width: 54ch; font-size: 15.5px; position: relative; }
+  .hero-p .sub strong { color: var(--ink); font-weight: 600; }
+  .cta-row { display: flex; gap: 14px; margin-top: 36px; flex-wrap: wrap; position: relative; }
+  .btn {
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em;
+    padding: 15px 28px; border-radius: 3px; display: inline-flex; align-items: center; gap: 9px;
+    border: 1px solid var(--line-2); transition: all .22s;
+  }
+  .btn.primary { background: var(--accent); color: #170701; border-color: var(--accent); box-shadow: 0 0 34px rgba(255,94,31,.35); font-weight: 500; }
+  .btn.primary:hover { box-shadow: 0 0 54px rgba(255,94,31,.6); transform: translateY(-1px); }
+  .btn.ghost:hover { border-color: var(--live); color: var(--live); }
+
+  section { max-width: 1240px; margin: 0 auto; padding: 100px 4vw 30px; position: relative; }
+  .sec-label {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .2em;
+    color: var(--accent); margin-bottom: 20px; display: flex; align-items: center; gap: 12px;
+  }
+  .sec-label::after { content: ""; height: 1px; width: 64px; background: rgba(255,94,31,.4); }
+  .sec-title { font-size: clamp(30px, 4.8vw, 58px); font-weight: 650; letter-spacing: -.045em; line-height: .98; max-width: 21ch; }
+  .sec-intro { margin-top: 18px; color: var(--muted); max-width: 58ch; font-size: 15px; }
+
+  /* terminal + quadrants */
+  .sys-grid { display: grid; grid-template-columns: 380px 1fr; gap: 40px; margin-top: 60px; align-items: start; }
+  @media (max-width: 1000px) { .sys-grid { grid-template-columns: 1fr; } }
+  .term {
+    position: sticky; top: 92px;
+    background: var(--card); border: 1px solid var(--line-2); border-radius: 5px;
+    font-family: var(--mono); font-size: 11.5px; overflow: hidden;
+    box-shadow: 0 20px 70px rgba(0,0,0,.5);
+  }
+  .term .tbar {
+    display: flex; align-items: center; gap: 8px; padding: 11px 14px;
+    border-bottom: 1px solid var(--line); background: rgba(237,238,242,.03);
+    color: var(--muted); letter-spacing: .1em; font-size: 10px;
+  }
+  .term .lights { display: flex; gap: 5px; margin-right: 4px; }
+  .term .lights span { width: 8px; height: 8px; border-radius: 50%; background: rgba(237,238,242,.14); }
+  .term .lights span:first-child { background: var(--accent); }
+  .term .tbody { padding: 18px 16px 22px; line-height: 2.15; min-height: 260px; }
+  .term .ln { color: rgba(237,238,242,.85); }
+  .term .ln .fn { color: var(--live); }
+  .term .ln .cm { color: var(--muted); }
+  .term .ln .ok { color: var(--accent); }
+  .quads { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  @media (max-width: 680px) { .quads { grid-template-columns: 1fr; } }
+  .quad { background: var(--bg); padding: 44px 32px 40px; position: relative; overflow: hidden; transition: background .25s; }
+  .quad:hover { background: var(--bg-2); }
+  .quad .ghost {
+    position: absolute; right: -10px; top: -34px; font-size: 150px; font-weight: 800; letter-spacing: -.06em;
+    color: transparent; -webkit-text-stroke: 1px rgba(237,238,242,.07); transition: all .3s; pointer-events: none;
+  }
+  .quad:hover .ghost { -webkit-text-stroke-color: rgba(255,94,31,.35); }
+  .quad .num { font-family: var(--mono); font-size: 10.5px; letter-spacing: .18em; color: var(--live); display: block; margin-bottom: 18px; }
+  .quad h3 { font-size: 25px; font-weight: 650; letter-spacing: -.03em; margin-bottom: 12px; position: relative; }
+  .quad p { color: var(--muted); font-size: 14.5px; max-width: 40ch; position: relative; }
+  .quad .out { display: block; margin-top: 24px; font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; color: var(--accent); }
+
+  /* livraisons + téléphone */
+  .ships-grid { display: grid; grid-template-columns: 1fr 320px; gap: 48px; align-items: start; margin-top: 60px; }
+  @media (max-width: 1000px) { .ships-grid { grid-template-columns: 1fr; } .phone-wrap { order: -1; margin: 0 auto; } }
+  .ships { border-top: 1px solid var(--line); }
+  .ship {
+    display: grid; grid-template-columns: 64px 1.25fr 1.5fr auto; gap: 26px; align-items: center;
+    padding: 34px 10px; border-bottom: 1px solid var(--line); position: relative; transition: background .2s;
+  }
+  .ship:hover { background: var(--bg-2); }
+  .ship .idx { font-family: var(--mono); font-size: 26px; color: rgba(237,238,242,.2); }
+  .ship:hover .idx { color: var(--accent); }
+  .ship .cat { display: block; font-family: var(--mono); font-size: 9.5px; letter-spacing: .2em; color: var(--muted); margin-bottom: 7px; }
+  .ship .name { font-size: 21px; font-weight: 650; letter-spacing: -.02em; }
+  .ship .desc { color: var(--muted); font-size: 14px; padding-right: 30px; }
+  .ship .side { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
+  .status { font-family: var(--mono); font-size: 9.5px; letter-spacing: .14em; padding: 5px 10px; border-radius: 2px; }
+  .status.prod { color: var(--live); border: 1px solid rgba(53,224,194,.4); background: rgba(53,224,194,.06); }
+  .status.proto { color: var(--muted); border: 1px solid var(--line-2); }
+  .tags { display: flex; gap: 7px; flex-wrap: wrap; justify-content: flex-end; }
+  .tag { font-family: var(--mono); font-size: 9.5px; letter-spacing: .08em; padding: 4px 9px; border: 1px solid var(--line); color: var(--muted); border-radius: 2px; }
+  @media (max-width: 900px) {
+    .ship { grid-template-columns: 44px 1fr; }
+    .ship .desc, .ship .side { grid-column: 2; }
+    .ship .side { align-items: flex-start; } .tags { justify-content: flex-start; }
+  }
+  .phone-wrap { position: sticky; top: 92px; }
+  .phone {
+    width: 292px; border-radius: 38px; padding: 10px;
+    background: #0b0d10; border: 1px solid var(--line-2);
+    box-shadow: 0 30px 90px rgba(0,0,0,.6), 0 0 50px rgba(53,224,194,.06);
+    position: relative; overflow: hidden;
+  }
+  .ph-notch { width: 90px; height: 22px; background: #000; border-radius: 12px; margin: 2px auto 8px; }
+  .ph-head {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    background: #12151a; border-radius: 14px 14px 0 0; border-bottom: 1px solid var(--line);
+  }
+  .ph-av {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--accent), #b33c0e);
+    display: grid; place-items: center; font-weight: 700; font-size: 14px; color: #fff;
+  }
+  .ph-name { font-size: 12.5px; font-weight: 650; }
+  .ph-status { font-family: var(--mono); font-size: 8.5px; color: var(--live); letter-spacing: .06em; }
+  .ph-live { margin-left: auto; color: var(--live); font-size: 10px; animation: pulse 1.6s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+  .chat {
+    height: 350px; padding: 14px 10px 10px; background: #0e1013;
+    display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; overflow: hidden;
+  }
+  .msg { max-width: 82%; padding: 8px 11px; border-radius: 12px; font-size: 12px; line-height: 1.45; color: rgba(237,238,242,.92); animation: pop .3s ease; }
+  @keyframes pop { from { opacity: 0; transform: translateY(8px) scale(.97); } }
+  .msg.in  { background: #1c1f26; border-bottom-left-radius: 4px; align-self: flex-start; }
+  .msg.out { background: #144532; border-bottom-right-radius: 4px; align-self: flex-end; }
+  .msg .t { display: block; font-family: var(--mono); font-size: 8px; color: rgba(237,238,242,.45); margin-top: 4px; text-align: right; }
+  .msg.sys {
+    align-self: center; background: none; border: 1px solid rgba(53,224,194,.4);
+    font-family: var(--mono); font-size: 8.5px; letter-spacing: .1em; color: var(--live);
+    border-radius: 4px; padding: 6px 10px;
+  }
+  .msg.typing { display: flex; gap: 4px; padding: 11px 13px; }
+  .msg.typing i { width: 5px; height: 5px; border-radius: 50%; background: rgba(237,238,242,.5); animation: tp 1s infinite; }
+  .msg.typing i:nth-child(2) { animation-delay: .15s; } .msg.typing i:nth-child(3) { animation-delay: .3s; }
+  @keyframes tp { 0%,100% { opacity: .25; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-2px); } }
+  .ph-input {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; background: #12151a; border-radius: 0 0 14px 14px;
+    font-size: 11.5px; color: rgba(237,238,242,.35);
+  }
+  .ph-input i { font-style: normal; color: var(--live); }
+  .phone-cap { font-family: var(--mono); font-size: 9px; letter-spacing: .2em; color: rgba(237,238,242,.35); text-align: center; margin-top: 14px; }
+
+  /* capacités */
+  .caps-wrap { margin-top: 60px; }
+  .caps {
+    display: flex; gap: 1px; overflow-x: auto; scroll-snap-type: x proximity;
+    background: var(--line); border: 1px solid var(--line);
+    scrollbar-width: none; cursor: grab;
+    touch-action: pan-x pan-y; -webkit-overflow-scrolling: touch;
+  }
+  .caps::-webkit-scrollbar { display: none; }
+  .caps.drag { cursor: grabbing; }
+  .cap { width: 340px; scroll-snap-align: start; background: var(--bg); padding: 40px 30px 36px; position: relative; overflow: hidden; flex-shrink: 0; }
+  .cap:hover { background: var(--bg-2); }
+  .cap .big {
+    font-size: 120px; font-weight: 800; line-height: 1; letter-spacing: -.05em;
+    color: transparent; -webkit-text-stroke: 1px rgba(237,238,242,.1); margin-bottom: 24px;
+  }
+  .cap:hover .big { -webkit-text-stroke-color: rgba(53,224,194,.5); }
+  .cap .st { font-family: var(--mono); font-size: 9.5px; letter-spacing: .18em; color: var(--accent); display: block; margin-bottom: 12px; }
+  .cap h3 { font-size: 21px; font-weight: 650; letter-spacing: -.02em; margin-bottom: 10px; }
+  .cap p { color: var(--muted); font-size: 13.5px; }
+  .caps-hint { font-family: var(--mono); font-size: 9.5px; letter-spacing: .22em; color: rgba(237,238,242,.35); margin-top: 16px; text-align: right; }
+
+  /* langues */
+  .langs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); margin-top: 56px; }
+  @media (max-width: 800px) { .langs { grid-template-columns: 1fr 1fr; } }
+  .lang { background: var(--bg); padding: 36px 28px; transition: background .2s; }
+  .lang:hover { background: var(--bg-2); }
+  .lang .code { font-family: var(--mono); font-size: 10px; letter-spacing: .2em; color: var(--live); display: block; margin-bottom: 14px; }
+  .lang .word { font-size: 30px; font-weight: 650; letter-spacing: -.03em; }
+  .lang .word.ar { font-family: var(--arabic); direction: rtl; text-align: right; display: block; font-weight: 600; }
+  .lang p { color: var(--muted); font-size: 12.5px; margin-top: 10px; }
+
+  /* final */
+  .final { text-align: center; padding: 130px 4vw 110px; position: relative; overflow: hidden; max-width: none; }
+  .final .glow { position: absolute; width: 640px; height: 640px; border-radius: 50%; filter: blur(140px); background: rgba(255,94,31,.09); left: 50%; top: 50%; transform: translate(-50%,-50%); pointer-events: none; }
+  .final .sec-label { justify-content: center; }
+  .final .sec-label::after { display: none; }
+  .final h2 { font-size: clamp(38px, 6.6vw, 84px); font-weight: 650; letter-spacing: -.05em; line-height: .95; position: relative; }
+  .final p { color: var(--muted); margin-top: 22px; position: relative; }
+  .final .cta-row { justify-content: center; }
+
+  footer {
+    border-top: 1px solid var(--line); padding: 36px 4vw;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    font-family: var(--mono); font-size: 10px; letter-spacing: .12em; color: var(--muted);
+  }
+  footer a:hover { color: var(--accent); }
+
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s cubic-bezier(.2,.6,.2,1), transform .8s cubic-bezier(.2,.6,.2,1); }
+  .reveal.in { opacity: 1; transform: none; }
+  .spot { position: relative; }
+  .spot:not(.ship)::after, .ship.spot::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s;
+    background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 50%), rgba(255,94,31,.09), transparent 65%);
+  }
+  .spot:not(.ship):hover::after, .ship.spot:hover::before { opacity: 1; }
+</style>
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="index.html">
+    <span class="qmark"><span></span><span></span><span></span><span></span></span>
+    quadrIA<em>.systèmes</em>
+  </a>
+  <div class="spacer"></div>
+  <a class="nav-link" href="studio.html">STUDIO</a>
+  <a class="nav-link" href="growth.html">GROWTH</a>
+  <a class="btn-wa wa-link" data-msg="Bonjour, je veux parler d'un système IA pour mon activité." href="index.html#contact">✆ WHATSAPP</a>
+  <a class="nav-link" href="index.html">← ACCUEIL</a>
+</nav>
+
+<header class="hero-p">
+  <div class="glow"></div>
+  <div class="kicker">◉ PÔLE 01 — SYSTÈMES & IA · EN PRODUCTION</div>
+  <h1>La machine qui <span class="serif">répond.</span></h1>
+  <p class="sub">
+    <strong>Agents de devis WhatsApp</strong>, <strong>réservation avec acompte</strong>, dashboards,
+    automatisations. Pendant que vous travaillez, le système capte, chiffre et convertit.
+  </p>
+  <div class="cta-row">
+    <a class="btn primary wa-link" data-msg="Bonjour, je souhaite réserver une démo de 15 minutes (pôle Systèmes & IA)." href="index.html#contact">◉ RÉSERVER UNE DÉMO — 15 MIN</a>
+    <a class="btn ghost" href="https://plateforme-beaute.onrender.com/s/eclat-studio" target="_blank" rel="noopener">VOIR UNE DÉMO EN DIRECT ↗</a>
+  </div>
+</header>
+
+<section>
+  <div class="sec-label reveal">/ S1 — LE SYSTÈME QUADRIA</div>
+  <h2 class="sec-title reveal">Quatre quadrants. <span class="serif">Zéro demande perdue.</span></h2>
+  <p class="sec-intro reveal">
+    Chaque mission suit le même cadre. Pas un site posé là : un circuit complet,
+    du premier message client jusqu'au chiffre en caisse.
+  </p>
+  <div class="sys-grid">
+    <div class="term reveal" aria-hidden="true">
+      <div class="tbar"><span class="lights"><span></span><span></span><span></span></span> PIPELINE.FLOW — EN DIRECT</div>
+      <div class="tbody" id="term-body"></div>
+    </div>
+    <div class="quads reveal">
+      <div class="quad">
+        <span class="ghost">01</span>
+        <span class="num">Q1 / CAPTER</span>
+        <h3>Chaque canal devient une entrée</h3>
+        <p>WhatsApp, Instagram, votre site, le bouche-à-oreille : tout converge vers un seul pipeline, horodaté, traçable.</p>
+        <span class="out">→ PLUS AUCUN MESSAGE SANS RÉPONSE</span>
+      </div>
+      <div class="quad">
+        <span class="ghost">02</span>
+        <span class="num">Q2 / RÉPONDRE</span>
+        <h3>Un agent qui parle votre métier</h3>
+        <p>Devis chiffrés, questions fréquentes, prise de rendez-vous — l'agent répond en secondes, dans la langue du client.</p>
+        <span class="out">→ DEVIS EN 2 MINUTES, 24H/24</span>
+      </div>
+      <div class="quad">
+        <span class="ghost">03</span>
+        <span class="num">Q3 / CONVERTIR</span>
+        <h3>L'acompte qui verrouille le rendez-vous</h3>
+        <p>Réservation en ligne avec paiement d'acompte à la source. Le no-show devient l'exception, pas la règle.</p>
+        <span class="out">→ AGENDA REMPLI, ACOMPTES ENCAISSÉS</span>
+      </div>
+      <div class="quad">
+        <span class="ghost">04</span>
+        <span class="num">Q4 / MESURER</span>
+        <h3>Vos chiffres, en direct</h3>
+        <p>Dashboard simple : leads, conversions, revenus, export CSV. Vous décidez sur des données, plus au feeling.</p>
+        <span class="out">→ VISIBILITÉ TEMPS RÉEL</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-label reveal">/ S2 — JOURNAL DE LIVRAISONS</div>
+  <h2 class="sec-title reveal">Des systèmes réels, <span class="serif">en production.</span></h2>
+  <p class="sec-intro reveal">Pas des maquettes. Des systèmes qui tournent, testables en démo.</p>
+  <div class="ships-grid">
+  <div class="ships reveal">
+    <div class="ship">
+      <span class="idx">01</span>
+      <div><span class="cat">BEAUTÉ · EN LIGNE</span><div class="name">Plateforme réservation salons</div></div>
+      <div class="desc">Scan de visage IA → coupes recommandées → devis pré-rempli → réservation avec acompte. Dashboard salon inclus.</div>
+      <div class="side">
+        <span class="status prod">● EN PRODUCTION</span>
+        <div class="tags"><span class="tag">FASTAPI</span><span class="tag">MEDIAPIPE</span><span class="tag">STRIPE CONNECT</span></div>
+      </div>
+    </div>
+    <div class="ship">
+      <span class="idx">02</span>
+      <div><span class="cat">MULTI-SECTEURS</span><div class="name">Agents de devis WhatsApp</div></div>
+      <div class="desc">Cinq métiers prototypés sur le même moteur : vocabulaire, grille tarifaire et parcours client propres à chaque secteur.</div>
+      <div class="side">
+        <span class="status proto">PROTOTYPES</span>
+        <div class="tags"><span class="tag">PYTHON</span><span class="tag">WATI</span><span class="tag">LLM</span></div>
+      </div>
+    </div>
+    <div class="ship">
+      <span class="idx">03</span>
+      <div><span class="cat">SUR MESURE</span><div class="name">Votre système</div></div>
+      <div class="desc">Chaque métier a son circuit. On cartographie le vôtre en 15 minutes et on le construit en jours.</div>
+      <div class="side">
+        <span class="status prod">● BRIEF OUVERT</span>
+        <div class="tags"><span class="tag">DIAGNOSTIC GRATUIT</span></div>
+      </div>
+    </div>
+  </div>
+  <aside class="phone-wrap reveal" aria-hidden="true">
+    <div class="phone">
+      <div class="ph-notch"></div>
+      <div class="ph-head">
+        <div class="ph-av">É</div>
+        <div>
+          <div class="ph-name">Salon Éclat</div>
+          <div class="ph-status">AGENT QUADRIA · EN LIGNE</div>
+        </div>
+        <div class="ph-live">◉</div>
+      </div>
+      <div class="chat" id="chat"></div>
+      <div class="ph-input"><span>Message</span><i>➤</i></div>
+    </div>
+    <div class="phone-cap">DÉMO · CONVERSATION SIMULÉE</div>
+  </aside>
+  </div>
+</section>
+
+<section>
+  <div class="sec-label reveal">/ S3 — CAPACITÉS DU PÔLE</div>
+  <h2 class="sec-title reveal">Ce que le pôle <span class="serif">construit.</span></h2>
+  <div class="caps-wrap reveal">
+    <div class="caps" id="caps">
+      <div class="cap"><div class="big">01</div><span class="st">[ 01 / RUNNING ]</span><h3>Agents IA WhatsApp</h3><p>Devis, qualification, prise de rendez-vous — multilingues, connectés à votre grille tarifaire.</p></div>
+      <div class="cap"><div class="big">02</div><span class="st">[ 02 / SHIPPED ]</span><h3>Réservation & acomptes</h3><p>Flux de réservation avec paiement d'acompte à la source. Stripe Connect, commission automatique.</p></div>
+      <div class="cap"><div class="big">03</div><span class="st">[ 03 / DEPLOYED ]</span><h3>Sites & plateformes</h3><p>Sites vitrines et web-apps sur mesure — taillés pour votre métier, pas pour un template.</p></div>
+      <div class="cap"><div class="big">04</div><span class="st">[ 04 / CONNECTED ]</span><h3>Dashboards & CRM</h3><p>Vos leads, conversions et revenus en temps réel. Export CSV, historique client.</p></div>
+      <div class="cap"><div class="big">05</div><span class="st">[ 05 / AUTOMATED ]</span><h3>Automatisations</h3><p>Relances, rappels, séquences de suivi — votre équipe arrête le travail manuel.</p></div>
+      <div class="cap"><div class="big">06</div><span class="st">[ 06 / MULTILINGUAL ]</span><h3>Contenu multilingue</h3><p>FR, EN, ES, darija — le système parle la langue de vos clients, avec un rendu arabe correct (RTL).</p></div>
+      <div class="cap"><div class="big">07</div><span class="st">[ 07 / RUN ]</span><h3>Run & maintenance</h3><p>Le système vit : supervision, évolutions, direction technique externalisée.</p></div>
+    </div>
+    <div class="caps-hint">SCROLL · DRAG →</div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-label reveal">/ S4 — LANGUES</div>
+  <h2 class="sec-title reveal">Vos clients parlent. <span class="serif">Dans leur langue.</span></h2>
+  <p class="sec-intro reveal">
+    Le client n'adapte pas sa langue au système ; c'est le système qui s'adapte au client.
+  </p>
+  <div class="langs reveal">
+    <div class="lang"><span class="code">FR / PRIMAIRE</span><span class="word">Français</span><p>France · Maghreb francophone</p></div>
+    <div class="lang"><span class="code">EN / GLOBAL</span><span class="word">English</span><p>Clients internationaux</p></div>
+    <div class="lang"><span class="code">ES / EUROPE</span><span class="word">Español</span><p>Espagne · Amérique latine</p></div>
+    <div class="lang"><span class="code">AR / MAROC</span><span class="word ar">الدارجة</span><p>Darija — marché marocain</p></div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="glow"></div>
+  <div class="sec-label reveal">◉ SYSTÈMES OUVERTS AUX NOUVEAUX BRIEFS</div>
+  <h2 class="reveal">Votre système, <span class="serif">en production</span> en jours.</h2>
+  <p class="reveal">Diagnostic 15 minutes, démo sur votre cas réel avant tout engagement.</p>
+  <div class="cta-row reveal">
+    <a class="btn primary wa-link" data-msg="Bonjour, je souhaite réserver une démo de 15 minutes (pôle Systèmes & IA)." href="index.html#contact">◉ RÉSERVER UNE DÉMO</a>
+    <a class="btn ghost" href="boutique.html">VOIR LA BOUTIQUE →</a>
+  </div>
+</section>
+
+<footer>
+  <span>© MMXXVI QUADRIA.STUDIO — PÔLE SYSTÈMES & IA</span>
+  <a href="index.html">← RETOUR À L'ACCUEIL</a>
+</footer>
+
+<script>
+  // reveal
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }), { threshold: .1 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // spotlight
+  document.querySelectorAll('.quad,.cap,.lang,.ship').forEach(el => el.classList.add('spot'));
+  document.addEventListener('pointermove', e => {
+    const s = e.target.closest('.spot');
+    if (!s) return;
+    const r = s.getBoundingClientRect();
+    s.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+    s.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  });
+
+  // terminal pipeline
+  const pipeline = [
+    { t: '$ <span class="fn">capter</span>.run()', d: '<span class="cm"># wa · ig · site · référral</span>', r: '<span class="ok">✓ zéro demande perdue</span>' },
+    { t: '$ <span class="fn">répondre</span>.run()', d: '<span class="cm"># agent multilingue 24/7</span>', r: '<span class="ok">✓ devis en 2 min</span>' },
+    { t: '$ <span class="fn">convertir</span>.run()', d: '<span class="cm"># réservation + acompte</span>', r: '<span class="ok">✓ no-show ÷ 3</span>' },
+    { t: '$ <span class="fn">mesurer</span>.run()', d: '<span class="cm"># dashboard temps réel</span>', r: '<span class="ok">✓ visibilité totale</span>' },
+  ];
+  const termBody = document.getElementById('term-body');
+  let pi = 0;
+  function nextLine() {
+    if (pi >= pipeline.length) {
+      setTimeout(() => { termBody.innerHTML = ''; pi = 0; nextLine(); }, 4200);
+      return;
+    }
+    const s = pipeline[pi];
+    termBody.innerHTML += '<div class="ln">' + s.t + ' ' + s.d + '</div>';
+    setTimeout(() => {
+      termBody.innerHTML += '<div class="ln">' + s.r + '</div>';
+      pi++;
+      setTimeout(nextLine, 700);
+    }, 750);
+  }
+  nextLine();
+
+  // conversation WhatsApp simulée
+  const chat = document.getElementById('chat');
+  const chatSeq = [
+    { w: 'out', t: "Bonjour ! C'est combien un balayage + brushing ?", h: '10:42 ✓✓' },
+    { w: 'in',  t: "Bonjour 👋 Balayage + brushing : 75–95 € selon la longueur. Je vous propose un créneau ?", h: '10:42' },
+    { w: 'out', t: "Oui, jeudi après-midi si possible", h: '10:43 ✓✓' },
+    { w: 'in',  t: "Jeudi 14h30 ✓ L'acompte de 20 € confirme le rendez-vous → payer l'acompte", h: '10:43' },
+    { w: 'sys', t: "✓ ACOMPTE REÇU — RDV CONFIRMÉ JEU. 14:30" },
+  ];
+  let ci = 0, typingEl = null;
+  function chatStep() {
+    if (ci >= chatSeq.length) {
+      setTimeout(() => { chat.innerHTML = ''; ci = 0; chatStep(); }, 4200);
+      return;
+    }
+    const m = chatSeq[ci];
+    const show = () => {
+      if (typingEl) { typingEl.remove(); typingEl = null; }
+      const d = document.createElement('div');
+      d.className = 'msg ' + m.w;
+      d.innerHTML = m.t + (m.h ? '<span class="t">' + m.h + '</span>' : '');
+      chat.appendChild(d);
+      ci++; setTimeout(chatStep, 1150);
+    };
+    if (m.w === 'in') {
+      typingEl = document.createElement('div');
+      typingEl.className = 'msg in typing';
+      typingEl.innerHTML = '<i></i><i></i><i></i>';
+      chat.appendChild(typingEl);
+      setTimeout(show, 1000);
+    } else setTimeout(show, 400);
+  }
+  chatStep();
+
+  // drag capacités (souris uniquement)
+  const caps = document.getElementById('caps');
+  let isDown = false, startX = 0, startScroll = 0;
+  caps.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') return; isDown = true; startX = e.clientX; startScroll = caps.scrollLeft; caps.classList.add('drag'); caps.setPointerCapture(e.pointerId); });
+  caps.addEventListener('pointermove', e => { if (isDown) caps.scrollLeft = startScroll - (e.clientX - startX); });
+  ['pointerup', 'pointercancel'].forEach(ev => caps.addEventListener(ev, () => { isDown = false; caps.classList.remove('drag'); }));
+
+  // liens WhatsApp
+  const WA_NUMBER = '33771419959';
+  document.querySelectorAll('.wa-link').forEach(a => {
+    a.href = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(a.dataset.msg || 'Bonjour QuadrIA Studio.');
+    a.target = '_blank'; a.rel = 'noopener';
+  });
+</script>
+<script src="ui.js"></script>
+</body>
+</html>
