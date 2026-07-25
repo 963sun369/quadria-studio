@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audit express — QuadrIA Studio</title>
+<meta name="description" content="5 questions, 2 minutes : découvrez où vous perdez des clients et quel quadrant QuadrIA s'en charge. Audit gratuit, résultat immédiat.">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { overflow-x: clip; }
+  body { background: var(--bg); color: var(--ink); line-height: 1.5; min-height: 100svh; }
+  ::selection { background: var(--accent); color: #000; }
+  a { color: inherit; text-decoration: none; }
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: 999; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  }
+  nav {
+    display: flex; align-items: center; gap: 18px; padding: 0 28px; height: 62px;
+    border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 100;
+    background: rgba(11,10,9,.85); backdrop-filter: blur(12px);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; letter-spacing: -.02em; font-family: var(--disp); }
+  .qmark { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; width: 14px; height: 14px; }
+  .qmark span { background: var(--ink); }
+  .qmark span:nth-child(4) { background: var(--accent); }
+  .brand em { font-style: normal; color: var(--accent); }
+  nav .spacer { flex: 1; }
+  .nav-link { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; color: var(--muted); }
+  .nav-link:hover { color: var(--accent); }
+
+  main { max-width: 760px; margin: 0 auto; padding: 70px 4vw 90px; }
+  .sec-label {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .2em;
+    color: var(--accent); margin-bottom: 20px; display: flex; align-items: center; gap: 12px;
+  }
+  .sec-label::after { content: ""; height: 1px; width: 64px; background: rgba(255,94,31,.4); }
+  h1 { max-width: 18ch; }
+  .intro { color: var(--muted); margin-top: 16px; font-size: 15px; max-width: 56ch; }
+
+  .progress { display: flex; gap: 6px; margin: 44px 0 26px; }
+  .progress i { height: 3px; flex: 1; background: rgba(242,239,233,.12); border-radius: 2px; transition: background .3s; }
+  .progress i.on { background: var(--accent); }
+
+  .q-card {
+    background: var(--card); border: 1px solid var(--line-2); border-radius: 5px;
+    padding: 36px 32px; display: none;
+  }
+  .q-card.on { display: block; animation: qin .35s ease; }
+  @keyframes qin { from { opacity: 0; transform: translateY(14px); } }
+  .q-card .qn { font-family: var(--mono); font-size: 10px; letter-spacing: .2em; color: var(--live); margin-bottom: 14px; }
+  .q-card h2 { font-size: clamp(19px, 2.6vw, 25px); margin-bottom: 24px; line-height: 1.25; }
+  .opts { display: grid; gap: 10px; }
+  .opt {
+    text-align: left; background: var(--bg); border: 1px solid var(--line-2); border-radius: 4px;
+    color: var(--ink); font-family: var(--sans); font-size: 14.5px; padding: 16px 18px;
+    cursor: pointer; transition: all .18s; display: flex; align-items: center; gap: 12px;
+  }
+  .opt:hover { border-color: var(--accent); background: var(--bg-2); transform: translateX(4px); }
+  .opt b { font-family: var(--mono); font-size: 10px; color: var(--muted); font-weight: 400; }
+  .back { margin-top: 18px; background: none; border: none; color: var(--muted); font-family: var(--mono); font-size: 10px; letter-spacing: .14em; cursor: pointer; }
+  .back:hover { color: var(--accent); }
+
+  /* résultat */
+  .result { display: none; }
+  .result.on { display: block; animation: qin .4s ease; }
+  .r-term {
+    background: var(--card); border: 1px solid var(--line-2); border-radius: 5px;
+    font-family: var(--mono); overflow: hidden; margin-bottom: 30px;
+  }
+  .r-term .tbar {
+    display: flex; align-items: center; gap: 8px; padding: 12px 16px;
+    border-bottom: 1px solid var(--line); background: rgba(242,239,233,.03);
+    color: var(--muted); font-size: 10px; letter-spacing: .14em;
+  }
+  .r-term .lights { display: flex; gap: 5px; margin-right: 6px; }
+  .r-term .lights span { width: 8px; height: 8px; border-radius: 50%; background: rgba(242,239,233,.14); }
+  .r-term .lights span:first-child { background: var(--accent); }
+  .r-term .tbody { padding: 24px 22px; font-size: 12px; line-height: 2.2; }
+  .r-term .ln .ok { color: var(--live); }
+  .r-term .ln .hi { color: var(--accent); }
+  .score-row { display: flex; align-items: center; gap: 18px; margin: 8px 0 4px; }
+  .score-num { font-family: var(--disp); font-size: 46px; color: var(--accent); }
+  .score-bar { flex: 1; height: 8px; background: rgba(242,239,233,.1); border-radius: 4px; overflow: hidden; }
+  .score-bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--live), var(--accent)); transition: width 1.2s cubic-bezier(.2,.6,.2,1); }
+  .verdict { font-size: 15px; color: var(--muted); margin: 18px 0 6px; }
+  .verdict b { color: var(--ink); }
+  .quad-reco {
+    display: block; border: 1px solid rgba(255,94,31,.45); border-radius: 5px; background: var(--bg-2);
+    padding: 26px 26px; margin: 26px 0; transition: all .2s; position: relative; overflow: hidden;
+  }
+  .quad-reco:hover { border-color: var(--accent); box-shadow: 0 0 34px rgba(255,94,31,.2); }
+  .quad-reco .k { font-family: var(--mono); font-size: 9.5px; letter-spacing: .2em; color: var(--live); margin-bottom: 10px; }
+  .quad-reco h3 { font-size: 21px; }
+  .quad-reco p { color: var(--muted); font-size: 13.5px; margin-top: 8px; }
+  .quad-reco .go { display: block; margin-top: 14px; font-family: var(--mono); font-size: 10px; letter-spacing: .14em; color: var(--accent); }
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 26px; }
+  .btn {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
+    padding: 15px 26px; border-radius: 3px; display: inline-flex; align-items: center; gap: 9px;
+    border: 1px solid var(--line-2); transition: all .22s; cursor: pointer; background: none; color: var(--ink);
+  }
+  .btn.primary { background: var(--accent); color: #170701; border-color: var(--accent); box-shadow: 0 0 30px rgba(255,94,31,.3); font-weight: 500; }
+  .btn.primary:hover { box-shadow: 0 0 48px rgba(255,94,31,.55); }
+  .btn.cal { border-color: rgba(255,176,84,.5); color: var(--live); }
+  .btn.cal:hover { background: rgba(255,176,84,.08); }
+  .btn.wa { border-color: rgba(34,197,94,.5); color: #4ade80; }
+  .btn.wa:hover { background: rgba(34,197,94,.1); }
+  .restart { margin-top: 22px; }
+
+  footer {
+    border-top: 1px solid var(--line); padding: 32px 4vw;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    font-family: var(--mono); font-size: 10px; letter-spacing: .12em; color: var(--muted);
+  }
+  footer a:hover { color: var(--accent); }
+</style>
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="index.html">
+    <span class="qmark"><span></span><span></span><span></span><span></span></span>
+    quadrIA<em>.audit</em>
+  </a>
+  <div class="spacer"></div>
+  <a class="nav-link" href="conseil.html">← PÔLE CONSEIL</a>
+</nav>
+
+<main>
+  <div class="sec-label">◉ Q1 — AUDIT EXPRESS EN LIGNE</div>
+  <h1>5 questions. <span class="serif">2 minutes.</span></h1>
+  <p class="intro">Résultat immédiat : votre score d'urgence, le problème n°1, et le quadrant QuadrIA qui s'en charge.</p>
+
+  <div class="progress" id="progress"><i></i><i></i><i></i><i></i><i></i></div>
+
+  <div id="quiz"></div>
+
+  <div class="result" id="result">
+    <div class="r-term">
+      <div class="tbar"><span class="lights"><span></span><span></span><span></span></span> QUADRIA.AUDIT — RÉSULTAT</div>
+      <div class="tbody">
+        <div class="ln">$ audit --analyse <span class="ok">✓ terminé</span></div>
+        <div class="score-row">
+          <span class="score-num" id="score-num">0</span>
+          <div class="score-bar"><i id="score-bar"></i></div>
+        </div>
+        <div class="ln"><span class="hi" id="score-label">—</span></div>
+      </div>
+    </div>
+    <p class="verdict" id="verdict"></p>
+    <a class="quad-reco" id="quad-reco" href="#">
+      <span class="k" id="reco-k">—</span>
+      <h3 id="reco-h">—</h3>
+      <p id="reco-p">—</p>
+      <span class="go">DÉCOUVRIR CE QUADRANT →</span>
+    </a>
+    <div class="cta-row" id="result-ctas"></div>
+    <button class="back restart" id="restart">↺ REFAIRE L'AUDIT</button>
+  </div>
+</main>
+
+<footer>
+  <span>© MMXXVI QUADRIA.AUDIT — GRATUIT · SANS ENGAGEMENT</span>
+  <a href="index.html">QUADRIA.STUDIO</a>
+</footer>
+
+<script>
+  const WA_NUMBER = '33771419959';
+  const CALENDLY = 'https://calendly.com/slaoui-aymar/audit-express-quadria-15-min';
+  const FORM_ENDPOINT = ''; // ← Formspree pour recevoir les réponses par email
+
+  // s = points ; q = quadrant recommandé par la réponse (question 4 uniquement)
+  const QUESTIONS = [
+    { qn: '01 / VOTRE ACTIVITÉ', h: 'Vous êtes plutôt…', opts: [
+      { t: 'Commerce de proximité (salon, boutique, restaurant…)', s: 0 },
+      { t: 'Artisan / prestataire de services', s: 0 },
+      { t: 'E-commerce / vente en ligne', s: 0 },
+      { t: 'Autre', s: 0 },
+    ]},
+    { qn: '02 / VOS CANAUX', h: 'Où arrivent vos demandes clients aujourd’hui ?', opts: [
+      { t: 'WhatsApp / téléphone', s: 15 },
+      { t: 'Instagram / réseaux sociaux', s: 12 },
+      { t: 'Bouche-à-oreille surtout', s: 10 },
+      { t: 'Mon site web', s: 8 },
+    ]},
+    { qn: '03 / LE VOLUME', h: 'Combien de demandes par semaine, environ ?', opts: [
+      { t: 'Moins de 10', s: 5 },
+      { t: 'Entre 10 et 50', s: 15 },
+      { t: 'Entre 50 et 200', s: 25 },
+      { t: 'Plus de 200', s: 30 },
+    ]},
+    { qn: '04 / LE PROBLÈME', h: 'Qu’est-ce qui vous coûte le plus cher en ce moment ?', opts: [
+      { t: 'Des demandes restent sans réponse', s: 15, q: 'Q2' },
+      { t: 'Des rendez-vous manqués (no-shows)', s: 15, q: 'Q2' },
+      { t: 'Mon image / ma marque fait datée', s: 10, q: 'Q3' },
+      { t: 'Personne ne me trouve en ligne', s: 10, q: 'Q4' },
+    ]},
+    { qn: '05 / L’URGENCE', h: 'Vous voulez régler ça…', opts: [
+      { t: 'Cette semaine — ça me coûte tous les jours', s: 40 },
+      { t: 'Ce mois-ci', s: 25 },
+      { t: 'Ce trimestre', s: 10 },
+      { t: 'Je me renseigne pour l’instant', s: 0 },
+    ]},
+  ];
+
+  const QUADS = {
+    Q2: { k: 'QUADRANT RECOMMANDÉ — Q2 / SYSTÈMES & IA', h: 'Systèmes & IA', p: 'Un agent qui répond, chiffre et réserve à votre place, 24h/24. Le no-show et la demande perdue deviennent l’exception.', href: 'systemes.html' },
+    Q3: { k: 'QUADRANT RECOMMANDÉ — Q3 / STUDIO CRÉATIF', h: 'Studio créatif', p: 'Vidéo, motion, branding, direction artistique — l’image qui fait exister votre marque, dirigée par un producteur.', href: 'studio.html' },
+    Q4: { k: 'QUADRANT RECOMMANDÉ — Q4 / GROWTH', h: 'Growth & contenu', p: 'SEO, social, contenu : être trouvé par ceux qui cherchent déjà ce que vous vendez.', href: 'growth.html' },
+  };
+
+  const quiz = document.getElementById('quiz');
+  const bars = document.querySelectorAll('#progress i');
+  const answers = [];
+  let step = 0;
+
+  QUESTIONS.forEach((q, qi) => {
+    const card = document.createElement('div');
+    card.className = 'q-card' + (qi === 0 ? ' on' : '');
+    card.innerHTML = '<div class="qn">' + q.qn + '</div><h2>' + q.h + '</h2>';
+    const opts = document.createElement('div');
+    opts.className = 'opts';
+    q.opts.forEach(o => {
+      const b = document.createElement('button');
+      b.className = 'opt';
+      b.innerHTML = '<b>▸</b>' + o.t;
+      b.addEventListener('click', () => { answers[qi] = o; next(qi); });
+      opts.appendChild(b);
+    });
+    card.appendChild(opts);
+    if (qi > 0) {
+      const back = document.createElement('button');
+      back.className = 'back'; back.textContent = '← QUESTION PRÉCÉDENTE';
+      back.addEventListener('click', () => go(qi - 1));
+      card.appendChild(back);
+    }
+    quiz.appendChild(card);
+  });
+
+  function go(i) {
+    step = i;
+    document.querySelectorAll('.q-card').forEach((c, j) => c.classList.toggle('on', j === i));
+    bars.forEach((b, j) => b.classList.toggle('on', j <= i));
+    document.getElementById('result').classList.remove('on');
+    quiz.style.display = '';
+  }
+  function next(qi) {
+    bars[qi].classList.add('on');
+    if (qi < QUESTIONS.length - 1) go(qi + 1);
+    else finish();
+  }
+  go(0);
+
+  function finish() {
+    quiz.style.display = 'none';
+    const score = Math.min(100, answers.reduce((t, a) => t + (a.s || 0), 0));
+    const quad = QUADS[answers[3].q || 'Q2'];
+    const hot = score >= 65, warm = score >= 35 && score < 65;
+
+    document.getElementById('result').classList.add('on');
+    const label = hot ? 'URGENCE ÉLEVÉE — CHAQUE JOUR D’ATTENTE COÛTE' : warm ? 'URGENCE RÉELLE — À TRAITER CE MOIS-CI' : 'PAS D’URGENCE — CONSTRUISEZ EN AVANCE';
+    document.getElementById('score-label').textContent = label;
+    document.getElementById('verdict').innerHTML = hot
+      ? 'À votre volume et votre niveau d’urgence, <b>le problème se règle en jours, pas en mois</b>. Parlons-en directement.'
+      : warm
+      ? 'Le bon moment pour cadrer : <b>15 minutes d’audit suffisent</b> pour prioriser et chiffrer.'
+      : 'Vous avez le temps de bien faire. <b>Commencez par les ressources gratuites</b>, revenez quand ça chauffe.';
+
+    const reco = document.getElementById('quad-reco');
+    document.getElementById('reco-k').textContent = quad.k;
+    document.getElementById('reco-h').textContent = quad.h;
+    document.getElementById('reco-p').textContent = quad.p;
+    reco.href = quad.href;
+
+    const summary = '[AUDIT ' + score + '/100] ' + answers.map(a => a.t).join(' · ');
+    const ctas = document.getElementById('result-ctas');
+    ctas.innerHTML = '';
+    const wa = '<a class="btn ' + (hot ? 'primary' : 'wa') + '" href="https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(summary) + '" target="_blank" rel="noopener">✆ ENVOYER MON AUDIT SUR WHATSAPP</a>';
+    const cal = '<a class="btn ' + (hot ? 'cal' : 'primary') + '" href="' + CALENDLY + '" target="_blank" rel="noopener">◉ RÉSERVER L’AUDIT 15 MIN — CALENDLY</a>';
+    const vault = '<a class="btn" href="vault.html">📚 RESSOURCES GRATUITES — LE VAULT</a>';
+    ctas.innerHTML = hot ? wa + cal : warm ? cal + wa : vault + cal;
+
+    // compteur + barre
+    const n = document.getElementById('score-num');
+    let c = 0; const iv = setInterval(() => { c = Math.min(score, c + 3); n.textContent = c; if (c >= score) clearInterval(iv); }, 24);
+    requestAnimationFrame(() => { document.getElementById('score-bar').style.width = score + '%'; });
+
+    // lead stocké localement + endpoint optionnel
+    const lead = { score, quad: answers[3].q, answers: answers.map(a => a.t), date: new Date().toISOString() };
+    const all = JSON.parse(localStorage.getItem('q_audits') || '[]');
+    all.push(lead); localStorage.setItem('q_audits', JSON.stringify(all));
+    if (FORM_ENDPOINT) {
+      fetch(FORM_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(lead) }).catch(() => {});
+    }
+  }
+
+  document.getElementById('restart').addEventListener('click', () => { answers.length = 0; go(0); });
+</script>
+<script src="ui.js"></script>
+</body>
+</html>

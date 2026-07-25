@@ -1,0 +1,107 @@
+/* theme.css — identité QuadrIA v3.1, chargé APRÈS les styles inline de chaque page.
+   Une seule source pour : fontes, palette chaude, quadrillage, accents outline.
+   Remplace l'ancienne peau (Bricolage + serif italique) trop proche de la référence. */
+
+@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --bg: #0b0a09;              /* noir chaud */
+  --bg-2: #12100e;
+  --card: #141210;
+  --ink: #f2efe9;             /* blanc cassé */
+  --muted: #9a938a;
+  --accent: #ff5e1f;          /* orange safran */
+  --live: #ffb054;            /* ambre — statuts / EN DIRECT */
+  --gold: #d9a13c;
+  --line: rgba(242,239,233,.08);
+  --line-2: rgba(242,239,233,.15);
+  --mono: "Space Mono", ui-monospace, monospace;
+  --sans: "Space Grotesk", system-ui, sans-serif;
+  --disp: "Unbounded", system-ui, sans-serif;
+  --serif: "Unbounded", system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--sans);
+  /* quadrillage — le motif QuadrIA */
+  background-image:
+    linear-gradient(rgba(242,239,233,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(242,239,233,.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* display : Unbounded est large — graisses et tailles contenues */
+h1, h2, h3, .sec-title, .final h2, .stat .n, .ship .name {
+  font-family: var(--disp);
+  font-weight: 600;
+  letter-spacing: -.01em;
+}
+.hero h1 { font-size: clamp(28px, 5vw, 62px); letter-spacing: -.02em; line-height: 1.06; max-width: 15ch; }
+.hero h1 .serif { font-size: 1em; }
+.sec-title { font-size: clamp(24px, 3.8vw, 46px); line-height: 1.08; }
+.final h2 { font-size: clamp(30px, 5.4vw, 68px); line-height: 1.05; }
+h1 { line-height: 1.05; }
+
+/* accents : fini l'italique serif — mots en OUTLINE orange */
+.serif,
+h1 .serif, h2 .serif, h3 .serif,
+.hero h1 .serif, .sec-title .serif, .final h2 .serif,
+.step h3 .serif, .pole h3 .serif, .gate h1 .serif, .vault h2 .serif {
+  font-family: var(--disp);
+  font-style: normal;
+  font-weight: 700;
+  color: transparent;
+  -webkit-text-stroke: 1.3px var(--accent);
+  letter-spacing: 0;
+  text-shadow: none;
+}
+
+/* mockup téléphone (partagé hero accueil + page systèmes) */
+.phone {
+  width: 292px; border-radius: 38px; padding: 10px;
+  background: #100e0c; border: 1px solid var(--line-2);
+  box-shadow: 0 30px 90px rgba(0,0,0,.6), 0 0 50px rgba(255,94,31,.07);
+  position: relative; overflow: hidden;
+}
+.ph-notch { width: 90px; height: 22px; background: #000; border-radius: 12px; margin: 2px auto 8px; }
+.ph-head {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  background: #191512; border-radius: 14px 14px 0 0; border-bottom: 1px solid var(--line);
+}
+.ph-av {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--accent), #b33c0e);
+  display: grid; place-items: center; font-weight: 700; font-size: 14px; color: #fff;
+}
+.ph-name { font-size: 12.5px; font-weight: 650; font-family: var(--sans); }
+.ph-status { font-family: var(--mono); font-size: 8.5px; color: var(--live); letter-spacing: .06em; }
+.ph-live { margin-left: auto; color: var(--live); font-size: 10px; animation: pulse 1.6s infinite; }
+.chat {
+  height: 330px; padding: 14px 10px 10px; background: #14110e;
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; overflow: hidden;
+}
+.msg { max-width: 82%; padding: 8px 11px; border-radius: 12px; font-size: 12px; line-height: 1.45; color: rgba(242,239,233,.92); animation: pop .3s ease; }
+@keyframes pop { from { opacity: 0; transform: translateY(8px) scale(.97); } }
+.msg.in  { background: #221d18; border-bottom-left-radius: 4px; align-self: flex-start; }
+.msg.out { background: #144532; border-bottom-right-radius: 4px; align-self: flex-end; }
+.msg .t { display: block; font-family: var(--mono); font-size: 8px; color: rgba(242,239,233,.45); margin-top: 4px; text-align: right; }
+.msg.sys {
+  align-self: center; background: none; border: 1px solid rgba(255,176,84,.45);
+  font-family: var(--mono); font-size: 8.5px; letter-spacing: .1em; color: var(--live);
+  border-radius: 4px; padding: 6px 10px;
+}
+.msg.typing { display: flex; gap: 4px; padding: 11px 13px; }
+.msg.typing i { width: 5px; height: 5px; border-radius: 50%; background: rgba(242,239,233,.5); animation: tp 1s infinite; }
+.msg.typing i:nth-child(2) { animation-delay: .15s; } .msg.typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes tp { 0%,100% { opacity: .25; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-2px); } }
+.ph-input {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; background: #191512; border-radius: 0 0 14px 14px;
+  font-size: 11.5px; color: rgba(242,239,233,.35); font-family: var(--sans);
+}
+.ph-input i { font-style: normal; color: var(--live); }
+.phone-cap { font-family: var(--mono); font-size: 9px; letter-spacing: .2em; color: rgba(242,239,233,.35); text-align: center; margin-top: 14px; }
+
+/* téléphone posé dans le hero de l'accueil */
+.phone-hero { position: absolute; right: 4vw; bottom: 56px; }
+@media (max-width: 1100px) { .phone-hero { display: none; } }
