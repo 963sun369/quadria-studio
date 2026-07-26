@@ -1,5 +1,0 @@
-services:
-  - type: web
-    name: quadria-studio
-    runtime: static
-    staticPublishPath: .
