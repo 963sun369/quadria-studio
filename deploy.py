@@ -4,7 +4,7 @@ import shutil
 PROJECT = r'C:\Users\slaoui\Desktop\quadria-studio'
 
 def main():
-    print('Deploiement Quadria Studio v2.1')
+    print('Deploiement Quadria Studio v2.3')
     print('  Dossier : ' + PROJECT)
     print()
 
@@ -49,15 +49,12 @@ def main():
 
     print()
     print('=' * 40)
-    print('  Deploiement v2.1 termine !')
+    print('  Deploiement v2.3 termine !')
     print('=' * 40)
-    print()
-    print('IMPORTANT : Remplacez 212XXXXXXXXX dans index.html')
-    print('par votre vrai numero WhatsApp (format international).')
     print()
     print('Prochaines etapes :')
     print('  1. git add .')
-    print('  2. git commit -m "v2.1: widget WhatsApp + contact"')
+    print('  2. git commit -m "v2.3: drapeaux SVG + contenu enrichi + liens Stripe"')
     print('  3. git push origin master')
     print()
 
@@ -289,6 +286,7 @@ body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
 JS = '''
 (function() {
   'use strict';
+
   function initNavbar() {
     const navbar = document.querySelector('.q-navbar');
     if (!navbar) return;
@@ -296,6 +294,7 @@ JS = '''
       navbar.classList.toggle('scrolled', window.scrollY > 20);
     });
   }
+
   function initMobileMenu() {
     const toggle = document.querySelector('.q-mobile-toggle');
     const menu = document.querySelector('.q-mobile-menu');
@@ -308,23 +307,31 @@ JS = '''
         : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>';
     });
   }
+
   function initLangSwitcher() {
     const btn = document.querySelector('.q-lang-btn');
     const dropdown = document.querySelector('.q-lang-dropdown');
     if (!btn || !dropdown) return;
+
     const savedLang = localStorage.getItem('q-lang') || 'fr';
     updateLangDisplay(savedLang);
+
     btn.addEventListener('click', (e) => {
+      e.preventDefault();
       e.stopPropagation();
       dropdown.classList.toggle('open');
     });
+
     document.addEventListener('click', (e) => {
       if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
         dropdown.classList.remove('open');
       }
     });
+
     dropdown.querySelectorAll('.q-lang-option').forEach(opt => {
-      opt.addEventListener('click', () => {
+      opt.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         const lang = opt.dataset.lang;
         localStorage.setItem('q-lang', lang);
         updateLangDisplay(lang);
@@ -332,16 +339,17 @@ JS = '''
       });
     });
   }
+
   function updateLangDisplay(lang) {
     const btn = document.querySelector('.q-lang-btn');
     if (!btn) return;
-    const flags = { fr: '🇫🇷', en: '🇬🇧', es: '🇪🇸', darija: '🇲🇦' };
-    btn.querySelector('.q-lang-flag').textContent = flags[lang] || '🇫🇷';
-    btn.querySelector('.q-lang-code').textContent = lang;
+    const codeEl = btn.querySelector('.q-lang-code');
+    if (codeEl) codeEl.textContent = lang.toUpperCase();
     document.querySelectorAll('.q-lang-option').forEach(opt => {
       opt.classList.toggle('active', opt.dataset.lang === lang);
     });
   }
+
   function initIndustryCards() {
     document.querySelectorAll('.q-industry-card').forEach(card => {
       card.addEventListener('click', () => {
@@ -351,6 +359,7 @@ JS = '''
       });
     });
   }
+
   function initServiceCards() {
     document.querySelectorAll('.q-service-card').forEach(card => {
       card.addEventListener('click', () => {
@@ -360,6 +369,7 @@ JS = '''
       });
     });
   }
+
   function initPricingToggle() {
     const toggle = document.querySelector('.q-pricing-toggle');
     if (!toggle) return;
@@ -383,6 +393,7 @@ JS = '''
       yearlyBtn.classList.add('active'); monthlyBtn.classList.remove('active'); updatePrices(true);
     });
   }
+
   function initFAQ() {
     document.querySelectorAll('.q-faq-question').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -393,17 +404,19 @@ JS = '''
       });
     });
   }
+
   function injectNavbar() {
     if (document.querySelector('.q-navbar')) return;
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
     const isIndex = currentPage === 'index.html' || currentPage === '';
     const prefix = isIndex ? '' : 'index.html';
-    const navbarHTML = '<header class="q-navbar"><div class="q-navbar-inner"><a href="' + prefix + '" class="q-logo"><div class="q-logo-mark">Q</div><span class="q-logo-text">Quadria<span>Studio</span></span></a><nav class="q-nav-links"><a href="' + prefix + '#services">Services</a><a href="' + prefix + '#metiers">Metiers</a><a href="' + prefix + '#tarifs">Tarifs</a><a href="' + prefix + '#faq">FAQ</a></nav><div class="q-nav-right"><div style="position:relative;"><button class="q-lang-btn" type="button"><span class="q-lang-flag">🇫🇷</span><span class="q-lang-code">fr</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg></button><div class="q-lang-dropdown"><button class="q-lang-option active" data-lang="fr" type="button"><span>🇫🇷</span> FR</button><button class="q-lang-option" data-lang="en" type="button"><span>🇬🇧</span> EN</button><button class="q-lang-option" data-lang="es" type="button"><span>🇪🇸</span> ES</button><button class="q-lang-option" data-lang="darija" type="button"><span>🇲🇦</span> DARIJA</button></div></div><a href="' + prefix + '#contact" class="q-cta-btn">Demonstration</a></div><button class="q-mobile-toggle" type="button" aria-label="Menu"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button></div><div class="q-mobile-menu"><a href="' + prefix + '#services">Services</a><a href="' + prefix + '#metiers">Metiers</a><a href="' + prefix + '#tarifs">Tarifs</a><a href="' + prefix + '#faq">FAQ</a><a href="' + prefix + '#contact" class="q-cta-btn" style="display:block;text-align:center;margin-top:12px;">Demonstration gratuite</a></div></header>';
+    const navbarHTML = '<header class="q-navbar"><div class="q-navbar-inner"><a href="' + prefix + '" class="q-logo"><div class="q-logo-mark">Q</div><span class="q-logo-text">Quadria<span>Studio</span></span></a><nav class="q-nav-links"><a href="' + prefix + '#services">Services</a><a href="' + prefix + '#metiers">Metiers</a><a href="' + prefix + '#tarifs">Tarifs</a><a href="' + prefix + '#faq">FAQ</a></nav><div class="q-nav-right"><div style="position:relative;"><button class="q-lang-btn" type="button"><span class="q-lang-flag">\uD83C\uDDEB\uD83C\uDDF7</span><span class="q-lang-code">fr</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg></button><div class="q-lang-dropdown"><button class="q-lang-option active" data-lang="fr" type="button"><span>\uD83C\uDDEB\uD83C\uDDF7</span> FR</button><button class="q-lang-option" data-lang="en" type="button"><span>\uD83C\uDDEC\uD83C\uDDE7</span> EN</button><button class="q-lang-option" data-lang="es" type="button"><span>\uD83C\uDDEA\uD83C\uDDF8</span> ES</button><button class="q-lang-option" data-lang="darija" type="button"><span>\uD83C\uDDF2\uD83C\uDDE6</span> DARIJA</button></div></div><a href="' + prefix + '#contact" class="q-cta-btn">Demonstration</a></div><button class="q-mobile-toggle" type="button" aria-label="Menu"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button></div><div class="q-mobile-menu"><a href="' + prefix + '#services">Services</a><a href="' + prefix + '#metiers">Metiers</a><a href="' + prefix + '#tarifs">Tarifs</a><a href="' + prefix + '#faq">FAQ</a><a href="' + prefix + '#contact" class="q-cta-btn" style="display:block;text-align:center;margin-top:12px;">Demonstration gratuite</a></div></header>';
     const div = document.createElement('div');
     div.innerHTML = navbarHTML;
     document.body.insertBefore(div.firstElementChild, document.body.firstChild);
     document.body.style.paddingTop = '64px';
   }
+
   function injectFooter() {
     if (document.querySelector('.q-footer')) return;
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
@@ -414,7 +427,8 @@ JS = '''
     div.innerHTML = footerHTML;
     document.body.appendChild(div.firstElementChild);
   }
-  document.addEventListener('DOMContentLoaded', () => {
+
+  function initAll() {
     initNavbar();
     initMobileMenu();
     initLangSwitcher();
@@ -427,7 +441,13 @@ JS = '''
       injectNavbar();
       injectFooter();
     }
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+  } else {
+    initAll();
+  }
 })();
 
 '''
@@ -463,7 +483,7 @@ HTML = '''
       <div style="position:relative;">
         <button class="q-lang-btn" type="button">
           <span class="q-lang-flag">&#127479;&#127482;</span>
-          <span class="q-lang-code">fr</span>
+          <span class="q-lang-code">FR</span>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
         </button>
         <div class="q-lang-dropdown">
@@ -561,12 +581,14 @@ HTML = '''
           <span class="q-industry-tag garage">garage</span>
         </div>
         <h3>Garage &amp; Auto</h3>
-        <p>Devis instantanes, suivi reparations, pieces detachees, facturation.</p>
+        <p>Vos clients demandent un devis par WhatsApp, vous validez la reparation, ils suivent l'avancement en temps reel et paient en ligne. Facturation automatique a la livraison.</p>
         <div class="q-industry-features">
-          <span class="q-chip garage">Devis WhatsApp</span>
-          <span class="q-chip garage">Suivi reparations</span>
-          <span class="q-chip garage">Stock pieces</span>
-          <span class="q-chip garage">Factures auto</span>
+          <span class="q-chip garage">Devis WhatsApp instantane</span>
+          <span class="q-chip garage">Suivi reparations client</span>
+          <span class="q-chip garage">Stock pieces & alertes</span>
+          <span class="q-chip garage">Facturation automatique</span>
+          <span class="q-chip garage">Photos avant/apres</span>
+          <span class="q-chip garage">Garantie & historique</span>
         </div>
         <div class="q-industry-toggle">Decouvrir les fonctionnalites <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg></div>
       </div>
@@ -578,12 +600,14 @@ HTML = '''
           <span class="q-industry-tag realestate">immo</span>
         </div>
         <h3>Agence immobiliere</h3>
-        <p>Visites virtuelles, matching IA, mandats digitaux, suivi acquereurs.</p>
+        <p>Vos biens sont mis en ligne automatiquement, l'IA match les acquereurs qualifies, les visites se planifient seules et les mandats se signent digitalement.</p>
         <div class="q-industry-features">
-          <span class="q-chip realestate">Matching IA</span>
-          <span class="q-chip realestate">Visites virtuelles</span>
-          <span class="q-chip realestate">Mandats digitaux</span>
-          <span class="q-chip realestate">CRM integre</span>
+          <span class="q-chip realestate">Matching IA acquereurs</span>
+          <span class="q-chip realestate">Visites virtuelles 3D</span>
+          <span class="q-chip realestate">Mandats digitaux & signature</span>
+          <span class="q-chip realestate">CRM & pipeline ventes</span>
+          <span class="q-chip realestate">Estimation IA & comparables</span>
+          <span class="q-chip realestate">Alertes biens & relances</span>
         </div>
         <div class="q-industry-toggle">Decouvrir les fonctionnalites <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg></div>
       </div>
@@ -595,12 +619,14 @@ HTML = '''
           <span class="q-industry-tag veterinary">véto</span>
         </div>
         <h3>Clinique veterinaire</h3>
-        <p>Dossiers patients, rappels vaccins, teleconsultation, gestion stocks.</p>
+        <p>Dossier medical complet par animal, rappels de vaccins automatiques, teleconsultation pour les urgences legeres et gestion des stocks de medicaments.</p>
         <div class="q-industry-features">
-          <span class="q-chip veterinary">Dossier patient</span>
-          <span class="q-chip veterinary">Rappels vaccins</span>
-          <span class="q-chip veterinary">Teleconsultation</span>
-          <span class="q-chip veterinary">Gestion stock</span>
+          <span class="q-chip veterinary">Dossier medical complet</span>
+          <span class="q-chip veterinary">Rappels vaccins & soins</span>
+          <span class="q-chip veterinary">Teleconsultation urgences</span>
+          <span class="q-chip veterinary">Gestion stock medicaments</span>
+          <span class="q-chip veterinary">Ordonnances digitales</span>
+          <span class="q-chip veterinary">Suivi poids & carnet sante</span>
         </div>
         <div class="q-industry-toggle">Decouvrir les fonctionnalites <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg></div>
       </div>
@@ -709,7 +735,7 @@ HTML = '''
           <li>Dashboard basique</li>
           <li>Support email</li>
         </ul>
-        <a href="#contact" class="q-pricing-cta secondary">Commencer</a>
+        <a href="https://buy.stripe.com/placeholder-starter" target="_blank" class="q-pricing-cta secondary">Commencer</a>
       </div>
       <div class="q-pricing-card popular">
         <div class="q-pricing-popular-badge">Le plus choisi</div>
@@ -726,7 +752,7 @@ HTML = '''
           <li>Relances automatiques</li>
           <li>Support prioritaire</li>
         </ul>
-        <a href="#contact" class="q-pricing-cta primary">Choisir Pro</a>
+        <a href="https://buy.stripe.com/placeholder-pro" target="_blank" class="q-pricing-cta primary">Choisir Pro</a>
       </div>
       <div class="q-pricing-card">
         <h3>Enterprise</h3>
@@ -742,7 +768,7 @@ HTML = '''
           <li>Account manager dedie</li>
           <li>SLA garanti</li>
         </ul>
-        <a href="#contact" class="q-pricing-cta secondary">Nous contacter</a>
+        <a href="mailto:contact@quadria.studio" class="q-pricing-cta secondary">Nous contacter</a>
       </div>
     </div>
   </div>
